@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "mcp-server-starter": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/build/index.js"]
+    }
+  }
+}
