@@ -2,118 +2,100 @@
 
 /**
  * ============================================================================
- * MCP SERVER STARTER - Main Entry Point
+ * OBSIDIAN MCP SERVER - Main Entry Point
  * ============================================================================
  * 
- * Welcome! This is the main file that initializes your MCP server.
+ * An MCP (Model Context Protocol) server for integrating AI assistants with
+ * Obsidian via the Local REST API plugin.
  * 
- * WHAT IS MCP?
- * MCP (Model Context Protocol) lets AI assistants like Claude use your tools.
- * Think of it as building plugins that AI can use to perform actions.
+ * PREREQUISITES:
+ * 1. Install "Local REST API" plugin in Obsidian
+ * 2. Enable the plugin and note your API key
+ * 3. Set OBSIDIAN_API_KEY environment variable
  * 
- * HOW THIS FILE WORKS:
- * 1. Creates an MCP server instance
- * 2. Registers all your tools, resources, and prompts
- * 3. Starts listening for requests from AI clients
- * 
- * TO ADD YOUR OWN TOOLS:
- * 1. Create a new file in src/tools/ (copy calculator.ts as a template)
- * 2. Import your register function below
- * 3. Call it with the server instance
- * 4. Run: npm run build && npm run inspector
+ * FEATURES:
+ * - 40+ tools for vault management, note CRUD, search, and more
+ * - Daily notes and periodic notes support
+ * - Frontmatter/metadata management
+ * - Link analysis and graph operations
+ * - Note templates and quick capture
  * 
  * For more information: https://modelcontextprotocol.io
  * ============================================================================
  */
 
-// -----------------------------------------------------------------------------
-// IMPORTS
-// -----------------------------------------------------------------------------
-
-// The MCP SDK - this handles all the protocol communication for you
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
-// Your tool modules - add new imports here when you create new tools
-import { registerCalculatorTools } from "./tools/calculator.js";
-import { registerGreetingTools } from "./tools/greeting.js";
+// Obsidian MCP components
+import { registerAllTools } from "./tools/index.js";
+import { registerObsidianResources } from "./resources/obsidian.js";
+import { registerObsidianPrompts } from "./prompts/obsidian.js";
 
-// Resources and prompts (optional features)
-import { registerResources } from "./resources/index.js";
-import { registerPrompts } from "./prompts/index.js";
-
-// -----------------------------------------------------------------------------
-// SERVER SETUP
-// -----------------------------------------------------------------------------
+// Configuration and client
+import { getConfig } from "./utils/config.js";
+import { ObsidianClient } from "./utils/client.js";
 
 /**
  * Create the MCP server instance.
- * 
- * The 'name' appears in MCP clients to identify your server.
- * The 'version' helps with debugging and updates.
  */
 const server = new McpServer({
-  name: "mcp-server-starter",
+  name: "obsidian-mcp-server",
   version: "1.0.0",
 });
 
-// -----------------------------------------------------------------------------
-// REGISTER YOUR TOOLS HERE
-// -----------------------------------------------------------------------------
-// Each register function adds tools to the server.
-// Tools are functions that AI can call to perform actions.
-//
-// Example: To add a new tool file called "weather.ts":
-//   1. Create src/tools/weather.ts
-//   2. Add: import { registerWeatherTools } from "./tools/weather.js";
-//   3. Add: registerWeatherTools(server);
-// -----------------------------------------------------------------------------
-
-registerCalculatorTools(server);  // Math operations: add, subtract, multiply, divide
-registerGreetingTools(server);    // Utility tools: greet, get_current_time, echo
-
-// -----------------------------------------------------------------------------
-// REGISTER RESOURCES (Optional)
-// -----------------------------------------------------------------------------
-// Resources provide data that AI can read (like files or API responses).
-// See src/resources/index.ts for examples.
-// -----------------------------------------------------------------------------
-
-registerResources(server);
-
-// -----------------------------------------------------------------------------
-// REGISTER PROMPTS (Optional)
-// -----------------------------------------------------------------------------
-// Prompts are pre-written templates for common tasks.
-// See src/prompts/index.ts for examples.
-// -----------------------------------------------------------------------------
-
-registerPrompts(server);
-
-// -----------------------------------------------------------------------------
-// START THE SERVER
-// -----------------------------------------------------------------------------
-
 /**
- * Main function - starts the MCP server.
- * 
- * IMPORTANT: Use console.error() for logging, NOT console.log()!
- * The stdout (console.log) is reserved for MCP protocol messages.
+ * Main function - initializes and starts the MCP server.
  */
 async function main() {
-  // StdioServerTransport communicates via stdin/stdout
-  // This is how MCP clients (VS Code, Claude Desktop) talk to your server
+  // Validate configuration on startup
+  let client: ObsidianClient | null = null;
+  try {
+    const config = getConfig();
+    client = new ObsidianClient(config);
+    console.error(`📂 Obsidian MCP Server starting...`);
+    console.error(`   Host: ${config.host}:${config.port}`);
+    console.error(`   Secure: ${config.secure}`);
+  } catch (error) {
+    console.error("⚠️  Configuration warning:", (error as Error).message);
+    console.error("");
+    console.error("Running in demo mode - tools will be visible but won't connect to Obsidian.");
+    console.error("To enable full functionality, set:");
+    console.error("  OBSIDIAN_API_KEY - Your Local REST API key (required)");
+    console.error("");
+    // Create a dummy client for demo mode
+    const dummyConfig = {
+      apiKey: "demo-mode",
+      host: "127.0.0.1",
+      port: 27124,
+      secure: true,
+      timeout: 30000,
+      verifySsl: false,
+    };
+    client = new ObsidianClient(dummyConfig);
+  }
+
+  // Register all Obsidian tools
+  registerAllTools(server, client);
+
+  // Register resources
+  registerObsidianResources(server, client);
+
+  // Register prompts
+  registerObsidianPrompts(server);
+
+  // Start the server
   const transport = new StdioServerTransport();
-  
-  // Connect and start listening for requests
   await server.connect(transport);
-  
-  // Log to stderr so it doesn't interfere with the protocol
-  console.error("✅ MCP Server Starter is running!");
+
+  console.error("✅ Obsidian MCP Server is running!");
+  console.error("   Tools: 40+ available");
+  console.error("   Resources: 3 available");
+  console.error("   Prompts: 8 available");
+  console.error("");
   console.error("   Use 'npm run inspector' to test your tools.");
 }
 
-// Run the server and handle any fatal errors
 main().catch((error) => {
   console.error("❌ Fatal error:", error);
   process.exit(1);

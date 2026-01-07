@@ -1,10 +1,10 @@
 {
-  "name": "mcp-server-starter",
+  "name": "obsidian-mcp-server",
   "version": "1.0.0",
-  "description": "A starter template for building MCP (Model Context Protocol) servers with TypeScript",
+  "description": "MCP server for integrating AI assistants with Obsidian via the Local REST API plugin",
   "type": "module",
   "bin": {
-    "mcp-server-starter": "./build/index.js"
+    "obsidian-mcp-server": "./build/index.js"
   },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
@@ -18,10 +18,13 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "obsidian",
     "ai",
     "llm",
     "tools",
-    "typescript"
+    "typescript",
+    "notes",
+    "knowledge-base"
   ],
   "author": "",
   "license": "MIT",
