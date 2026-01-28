@@ -30,10 +30,19 @@ Connect AI assistants like **Claude** to your [Obsidian](https://obsidian.md) va
 
 ### 2. Install the MCP Server
 
+**Option A: Install from npm (recommended)**
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/obsidian-mcp.git
-cd obsidian-mcp
+npm install -g @aniketbiswas/obsidian-mcp-server
+```
+
+**Option B: Install from source**
+
+```bash
+git clone https://github.com/aniketbiswas/obsidian-mcp-server.git
+cd obsidian-mcp-server
 npm install && npm run build
+npm link  # Makes it available globally
 ```
 
 ### 3. Configure Claude Desktop
@@ -46,14 +55,29 @@ Edit the config file:
 | **Windows** | `%APPDATA%\Claude\claude_desktop_config.json` |
 | **Linux** | `~/.config/claude/claude_desktop_config.json` |
 
-Add this configuration:
+**If installed via npm:**
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "obsidian-mcp-server",
+      "env": {
+        "OBSIDIAN_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+**If installed from source:**
 
 ```json
 {
   "mcpServers": {
     "obsidian": {
       "command": "node",
-      "args": ["/FULL/PATH/TO/obsidian-mcp/build/index.js"],
+      "args": ["/FULL/PATH/TO/obsidian-mcp-server/build/index.js"],
       "env": {
         "OBSIDIAN_API_KEY": "your-api-key-here"
       }

@@ -1,19 +1,23 @@
 {
-  "name": "obsidian-mcp-server",
+  "name": "@aniketbiswas/obsidian-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for integrating AI assistants with Obsidian via the Local REST API plugin",
+  "description": "MCP server for integrating AI assistants with Obsidian via the Local REST API plugin. 40+ tools for vault management, notes, search, and more.",
   "type": "module",
   "bin": {
     "obsidian-mcp-server": "./build/index.js"
   },
+  "main": "./build/index.js",
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
     "dev": "tsc --watch",
     "start": "node build/index.js",
-    "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector node build/index.js",
+    "prepublishOnly": "npm run build"
   },
   "files": [
-    "build"
+    "build",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "mcp",
@@ -21,13 +25,27 @@
     "obsidian",
     "ai",
     "llm",
+    "claude",
     "tools",
     "typescript",
     "notes",
-    "knowledge-base"
+    "knowledge-base",
+    "pkm",
+    "cli"
   ],
-  "author": "",
+  "author": "Aniket Biswas",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aniketbiswas/obsidian-mcp-server.git"
+  },
+  "homepage": "https://github.com/aniketbiswas/obsidian-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/aniketbiswas/obsidian-mcp-server/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "zod": "^3.23.0"
