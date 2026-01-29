@@ -61,7 +61,8 @@ Edit the config file:
 {
   "mcpServers": {
     "obsidian": {
-      "command": "obsidian-mcp-server",
+      "command": "node",
+      "args": ["node_modules/@aniketbiswas/obsidian-mcp-server/build/index.js"],
       "env": {
         "OBSIDIAN_API_KEY": "your-api-key-here"
       }
@@ -69,6 +70,15 @@ Edit the config file:
   }
 }
 ```
+
+> **Note:** If the above doesn't work (common with nvm), use full paths:
+> ```json
+> {
+>   "command": "/usr/local/bin/node",
+>   "args": ["/usr/local/lib/node_modules/@aniketbiswas/obsidian-mcp-server/build/index.js"]
+> }
+> ```
+> Find your paths with: `which node` and `npm root -g`
 
 **If installed from source:**
 
@@ -161,6 +171,34 @@ Built-in: `meeting` · `project` · `book` · `article` · `person` · `recipe` 
 ---
 
 ## Troubleshooting
+
+<details>
+<summary><strong>"Cannot connect to MCP server" or "Server failed to start"</strong></summary>
+
+This is usually a **PATH issue**. Claude Desktop doesn't inherit your shell's PATH (especially with nvm).
+
+**Solution:** Use full absolute paths in your config:
+
+1. Find your node path: `which node`
+2. Find global modules: `npm root -g`
+3. Update config with full paths:
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "/Users/YOU/.nvm/versions/node/v22.x.x/bin/node",
+      "args": ["/Users/YOU/.nvm/versions/node/v22.x.x/lib/node_modules/@aniketbiswas/obsidian-mcp-server/build/index.js"],
+      "env": {
+        "OBSIDIAN_API_KEY": "your-key"
+      }
+    }
+  }
+}
+```
+
+**Check logs:** `~/Library/Logs/Claude/mcp.log` (macOS)
+</details>
 
 <details>
 <summary><strong>Claude doesn't see the server</strong></summary>

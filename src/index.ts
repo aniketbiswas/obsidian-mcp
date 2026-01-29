@@ -59,13 +59,16 @@ ENVIRONMENT VARIABLES:
 SETUP:
   1. Install "Local REST API" plugin in Obsidian
   2. Copy your API key from plugin settings
-  3. Set OBSIDIAN_API_KEY environment variable
+  3. Find your paths:
+     which node          # e.g., /usr/local/bin/node
+     npm root -g         # e.g., /usr/local/lib/node_modules
   4. Add to your Claude Desktop config:
 
      {
        "mcpServers": {
          "obsidian": {
-           "command": "obsidian-mcp-server",
+           "command": "/path/to/node",
+           "args": ["/path/to/node_modules/@aniketbiswas/obsidian-mcp-server/build/index.js"],
            "env": { "OBSIDIAN_API_KEY": "your-key-here" }
          }
        }
@@ -100,7 +103,7 @@ import { ObsidianClient } from "./utils/client.js";
  */
 const server = new McpServer({
   name: "obsidian-mcp-server",
-  version: "1.0.0",
+  version: "1.0.1",
 });
 
 /**

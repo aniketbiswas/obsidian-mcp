@@ -1,6 +1,6 @@
 {
   "name": "@aniketbiswas/obsidian-mcp-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for integrating AI assistants with Obsidian via the Local REST API plugin. 40+ tools for vault management, notes, search, and more.",
   "type": "module",
   "bin": {
